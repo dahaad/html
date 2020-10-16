@@ -329,7 +329,7 @@ html {
 	text-align: center;
 }
 .services .services-info .service:nth-child(2) .service-card .service-front {
-	background-image: url(./images/img-2.jpg);
+	background-image: url(./image/hero23.jpg );
 	background-size: cover;
 	position: relative;
 	color: white;
