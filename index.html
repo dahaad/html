@@ -4,90 +4,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Live-clock Greeting with local storage</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            padding: 0px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: grey;
+            font-family: 'Quicksand', sans-serif;
+            display: flex ;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: black;
+            height: 100vh;
         }
-
-        h1 {
-            color: white;
-            text-align: center;
-            margin-top: 100px;
-            font-size: 70px;
+        #time
+        {
+            font-size: 8rem; 
+            /* 1rem=19px; */
         }
-       
-
-        button {
-            background-color: yellow;
-            width: 60px;
-            height: 60px;
-            margin: auto;
-            margin-left: 530px;
+        h1
+        {
+            margin-bottom: 16px;
         }
-        #pos{
-            margin-left: 70px;
+        h2{
+            font-size:3rem;
+            opacity: .5;
         }
-
-        input {
-            position: relative;
-            left: 45px;
-            width: 50px;
-            background-color: grey;
-            font-size: 40px;
-            color: yellow;
-            /* margin-left: 150px; */
-            border: 0;
-        }
-        
     </style>
 </head>
 
 <body>
-    <h1>COUNTER</h1>
-
-   <div class="container">
-    <button id="neg"> - </button>
-    <input type="text" id="quantity" readonly="" value="0">
-    <button id="pos"> + </button>
-   </div>
-
-
+    <time id="time"></time>
+    <h1 id="greeting"></h1>
+    <h2 id="name" contenteditable="true"></h2>
+    <h3 id="date"></h3>
     <script>
+        //selectors
+        const time=document.getElementById('time');
+        const greeting=document.getElementById('greeting');
+        const name=document.getElementById('name');
+        const date=document.getElementById('date');
 
-        var add = document.getElementById("pos");
-        var sub = document.getElementById("neg");
-        var qty = document.getElementById("quantity");
+        //event handlers
+        name.addEventListener("keypress",setName);
+        name.addEventListener("blur",setName);
 
-        sub.setAttribute("disabled", "disabled");
+        //Functions
+        function showtime()
+        {
+            let today= new Date();
+            let hours= today.getHours();
+            let minutes= today.getMinutes();
+            let seconds= today.getSeconds();
+            let todayDate =today.toDateString();
+            //ampm format
+            const AmPm= hours > 12 ? 'PM' : 'AM';
+            // 12 hrs format
+            hours = hours % 12 || 12;
 
+            //output time
+            time.innerHTML = `${addZero(hours)}<span>:</span>${addZero(minutes)}<span>:</span>${addZero(seconds)} ${AmPm}`;
+            date.innerHTML=`${todayDate}`;
+            setTimeout(showtime,1000);
+        }
+        function addZero(n)
+        {
+            return((parseInt(n,10) < 10 ? '0' : '')+n);
+        }
 
-        add.addEventListener('click', () => {
-            var valuecount = parseInt(qty.value) + 1;
-            qty.value = valuecount;
+        //set greeting
+        function setGreeting()
+        {
+            let today= new Date(2020, 12, 12, 10, 12, 12);
+            let hours= today.getHours();
+            if(hours<12)
+            {
+                document.body.style.backgroundImage= 'url("../image/morning.jpg")';
+                document.body.style.backgroundSize= 'cover';
+                greeting.innerHTML="Good Morning";
 
-
-            if (valuecount >= 1) {
-                sub.removeAttribute("disabled", "disabled");
             }
+            else if(hours<18)
+            {
+                document.body.style.backgroundImage= 'url("../image/afternoon.jpg")';
+                document.body.style.backgroundSize= 'cover';
+                greeting.innerHTML="Good Afternoon";
 
-        });
-
-
-        sub.addEventListener('click', () => {
-            var valuecount = parseInt(qty.value) - 1;
-            qty.value = valuecount;
-
-
-            if (valuecount == 0) {
-                sub.setAttribute("disabled", "disabled");
             }
+            else 
+            {
+                document.body.style.backgroundImage= 'url("../image/night.jpg")';
+                document.body.style.backgroundSize= 'cover';
+                document.body.style.color= 'orange';
+                greeting.innerHTML="Good Evening";
 
-        });
+            }
+        }
 
-
+        function getName()
+        {
+            if(localStorage.getItem("mykeyname")===null)
+            {
+                name.innerHTML='[Enter Name]';
+            }
+            else
+            {
+                name.innerHTML=localStorage.getItem("mykeyname");
+            }
+        }
+        function setName(e)
+        {
+            if(e.type==="keypress")// enter keypress
+            {
+                if(e.keyCode===13)
+                {
+                    localStorage.setItem("myKeyname", e.target.innerHTML);
+                    name.blur();
+                }
+            }
+            else//blur event
+            {
+                localStorage.setItem("mykeyname", e.target.innerHTML);
+            }
+        }
+        //Function Call
+        showtime();
+        setGreeting();
+        getName();
+        setName();
     </script>
-
 </body>
 
 </html>
